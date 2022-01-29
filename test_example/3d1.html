@@ -1,54 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
   </head>
   <body>
     <script src="./three.js"></script>
     <script>
-    // 创建场景
-    const scene = new THREE.Scene()
-    // 创建照相机 ： 1.远景相机，透视相机
-    // PerspectiveCamera( fov, aspect, near, far )
-    // fov — 相机视锥体垂直视角
-    // aspect — 相机视锥体宽高比
-    // near — 相机视锥体近裁剪面
-    // far — 相机视锥体远裁剪面。
+      // 创建场景
+      const scene = new THREE.Scene();
+      // 创建照相机 ： 1.远景相机，透视相机
+      // PerspectiveCamera( fov, aspect, near, far )
+      // fov — 相机视锥体垂直视角
+      // aspect — 相机视锥体宽高比
+      // near — 相机视锥体近裁剪面
+      // far — 相机视锥体远裁剪面。
 
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight,1, 1000)
-    // 创建渲染器
-    const renderer = new THREE.WebGLRenderer()
+      const camera = new THREE.PerspectiveCamera(
+        45,
+        window.innerWidth / window.innerHeight,
+        100,
+        1000
+      );
+      // 2.正交相机
+      /*   OrthographicCamera( left, right, top, bottom, near, far )
+        left — 相机视椎体（Camera frustum）左面。
+        right — 相机视椎体（Camera frustum）右面。
+        top — 相机视椎体（Camera frustum）上面。
+        bottom — 相机视椎体（Camera frustum）下面。
+        near — 相机视椎体（Camera frustum）前面（靠近相机的这一面）。
+        far — 相机视椎体（Camera frustum）后面（远离相机的这一面）。
 
-    renderer.setSize(window.innerWidth,window.innerHeight);
-    document.body.appendChild(renderer.domElement)
+      */
+      // const orgCamera = new THREE.OrthographicCamera(
+      //   window.innerWidth / -2,
+      //   window.innerWidth / 2,
+      //   window.innerHeight / 2,
+      //   window.innerHeight / -2,
+      //   1,
+      //   1000
+      // );
+      // 创建渲染器
+      const renderer = new THREE.WebGLRenderer();
 
-    // 生成一个立方体对象
-    const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    // 添加纹理 || 材质
-    const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-    // 结合
-    const cube = new THREE.Mesh( geometry, material );
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
 
-    // 添加到场景当中去
-    scene.add(cube)
-    camera.position.z = 10;
-    renderer.render(scene,camera)
+      // 生成一个立方体对象
+      const geometry = new THREE.BoxGeometry(100, 100, 100);
+      // 添加纹理 || 材质
+      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      // 结合
+      const cube = new THREE.Mesh(geometry, material);
 
-    // 运动函数
-    function animate(){
-      // console.log(cube)
-      requestAnimationFrame(animate)
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01
-      renderer.render(scene,camera)
-    }
-    animate()
+      // 添加到场景当中去
+      scene.add(cube);
+      // orgCamera.position.z = 1000 - 100 * 1.414;
+      // orgCamera.position.z = 100 + 1.414;
+      camera.position.z = 950;
 
-
-
-  </script>
+      camera.lookAt(0, 90, 0);
+      camera.up.x = -1;
+      renderer.render(scene, camera);
+      console.log(camera);
+      // 运动函数
+      function animate() {
+        // console.log(cube)
+        // requestAnimationFrame(animate);
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
   </body>
 </html>
