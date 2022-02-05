@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #oCanvas {
+        margin: 0 auto;
+        width: 500px;
+        height: 500px;
+        display: block;
+        /* canvas是一个行级块元素 */
+        /* css像素设置的时候  就会比较不清晰，setsize设置的时候就属于物理像素，不会出现这种问题 */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <canvas id="oCanvas" height="500" width="500"></canvas> -->
+    <script src="./three.js"></script>
+    <script>
+      var oCanvas = document.getElementById('oCanvas');
+      // 创建场景
+      const scene = new THREE.Scene();
+      // 创建照相机 ： 1.远景相机，透视相机
+      // PerspectiveCamera( fov, aspect, near, far )
+      // fov — 相机视锥体垂直视角
+      // aspect — 相机视锥体宽高比
+      // near — 相机视锥体近裁剪面
+      // far — 相机视锥体远裁剪面。
+
+      // const camera = new THREE.PerspectiveCamera(
+      //   45,
+      //   window.innerWidth / window.innerHeight,
+      //   100,
+      //   1000
+      // );
+      // 2.正交相机
+      /*   OrthographicCamera( left, right, top, bottom, near, far )
+        left — 相机视椎体（Camera frustum）左面。
+        right — 相机视椎体（Camera frustum）右面。
+        top — 相机视椎体（Camera frustum）上面。
+        bottom — 相机视椎体（Camera frustum）下面。
+        near — 相机视椎体（Camera frustum）前面（靠近相机的这一面）。
+        far — 相机视椎体（Camera frustum）后面（远离相机的这一面）。
+
+      */
+      const orgCamera = new THREE.OrthographicCamera(
+        -window.innerWidth / 2,
+        window.innerWidth / 2,
+        window.innerHeight / 2,
+        -window.innerHeight / 2,
+        1,
+        1000
+      );
+      orgCamera.position.z = 500;
+      // 创建渲染器： 渲染器 -- 放映的工具
+      // 1.放映的位置
+      // 2.分辨率
+      // 3.颜色通道
+      // 4.渲染的大小
+      const renderer = new THREE.WebGLRenderer({
+        // canvas: oCanvas,
+        antialias: true,
+        // precision: 'mediump',
+        // alpha: true, //通道默认值为0
+        // premultipliedAlpha: false,
+      });
+
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // 圆形缓冲几何体
+      let circle;
+      function createCircleGeometry() {
+        const geometry = new THREE.CircleGeometry(50, 32);
+        const material = new THREE.MeshBasicMaterial({
+          color: 0xffff00,
+          side: THREE.DoubleSide,
+        });
+        circle = new THREE.Mesh(geometry, material);
+        scene.add(circle);
+      }
+
+      // 圆锥缓冲几何体
+      let cone;
+      function createConeGeometry() {
+        const geometry = new THREE.ConeGeometry(50, 100, 8);
+        const material = new THREE.MeshBasicMaterial({ color: 0xfff });
+        cone = new THREE.Mesh(geometry, material);
+        scene.add(cone);
+        cone.position.set(200, 10, 10);
+      }
+
+      // 圆柱缓冲几何体
+      let cylinder;
+      function createCylinderGeometry() {
+        const geometry = new THREE.CylinderGeometry(50, 50, 50, 8);
+        const material = new THREE.MeshBasicMaterial({ color: 0xffff0 });
+        cylinder = new THREE.Mesh(geometry, material);
+        scene.add(cylinder);
+        cylinder.position.set(400, 10, 10);
+      }
+
+      // 十二面缓冲几何体
+      let sidedGeometry12;
+      function createDodecahedronGeometry() {
+        const geometry = new THREE.DodecahedronGeometry(50, 0);
+        const material = new THREE.MeshBasicMaterial({
+          color: 0xffff6,
+          // wireframeLinewidth: 1,
+          wireframe: true,
+        });
+        sidedGeometry12 = new THREE.Mesh(geometry, material);
+        scene.add(sidedGeometry12);
+        sidedGeometry12.position.set(0, -200, 10);
+      }
+
+      // 边缘几何体  绘制几何体的边缘
+      let line;
+      function createEdgesGeometry() {
+        const geometry = new THREE.DodecahedronGeometry(50, 0);
+        const edges = new THREE.EdgesGeometry(geometry);
+        line = new THREE.LineSegments(
+          edges,
+          new THREE.LineBasicMaterial({ color: 0xffffff })
+        );
+        scene.add(line);
+        line.position.set(0, 110, 10);
+      }
+
+      // 挤压缓冲几何体
+      let mesh;
+      function createExtrudeGeometry() {
+        const length = 100,
+          width = 50;
+
+        const shape = new THREE.Shape();
+        shape.moveTo(0, 0);
+        shape.lineTo(0, width);
+        shape.lineTo(length, width);
+        shape.lineTo(length, 0);
+        shape.lineTo(0, 0);
+
+        const extrudeSettings = {
+          steps: 2,
+          depth: 50,
+          bevelEnabled: true,
+          bevelThickness: 10,
+          bevelSize: 6,
+          bevelOffset: 0,
+          bevelSegments: 1,
+        };
+
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        const material = new THREE.MeshBasicMaterial({
+          color: 0x00ff08,
+          wireframe: true,
+        });
+        mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        mesh.position.set(-200, 0, 0);
+      }
+      createCircleGeometry();
+      createConeGeometry();
+      createCylinderGeometry();
+      createDodecahedronGeometry();
+      createEdgesGeometry();
+      createExtrudeGeometry();
+
+      //  以上太麻烦了，我们最好做一个组
+      let group;
+      function createGroup() {
+        //create a group and add the two cubes
+        //These cubes can now be rotated / scaled etc as a group
+        group = new THREE.Group();
+        group.add(cylinder);
+        group.add(cone);
+        group.add(circle);
+        group.add(sidedGeometry12);
+        group.add(line);
+        group.add(mesh);
+
+        scene.add(group);
+        // group.position.set(0, 100, 10);
+      }
+      createGroup();
+
+      // 运动函数
+      function animate() {
+        // console.log(circle)
+        requestAnimationFrame(animate);
+        // circle.rotation.y += 0.01;
+        // sidedGeometry12.rotation.z += 0.01;
+        // sidedGeometry12.rotation.x += 0.01;
+        // sidedGeometry12.rotation.y += 0.01;
+        // mesh.rotation.z += 0.01;
+        // mesh.rotation.x += 0.01;
+        mesh.rotation.y += 0.01;
+        // renderer.render(circle, orgCamera);
+        renderer.render(scene, orgCamera);
+      }
+      animate();
+    </script>
+  </body>
+</html>
