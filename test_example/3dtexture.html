@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>纹理</title>
+    <style>
+      #oCanvas {
+        margin: 0 auto;
+        width: 500px;
+        height: 500px;
+        display: block;
+        /* canvas是一个行级块元素 */
+        /* css像素设置的时候  就会比较不清晰，setsize设置的时候就属于物理像素，不会出现这种问题 */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <canvas id="oCanvas" height="500" width="500"></canvas> -->
+    <script src="./three.js"></script>
+    <script>
+      // 创建场景
+      const scene = new THREE.Scene();
+
+      // 创建照相机 ： 1.远景相机，透视相机
+      const orgCamera = new THREE.OrthographicCamera(
+        -window.innerWidth / 2,
+        window.innerWidth / 2,
+        window.innerHeight / 2,
+        -window.innerHeight / 2,
+        1,
+        1000
+      );
+
+      const renderer = new THREE.WebGLRenderer({
+        // canvas: oCanvas,
+        antialias: true,
+        // precision: 'mediump',
+        // alpha: true, //通道默认值为0
+        // premultipliedAlpha: false,
+      });
+
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      // 用了setsize之后  这个canvas的大小就变化了 因为直接把这个行内式添加上了样式
+      // renderer.setSize(500, 500);
+
+      document.body.appendChild(renderer.domElement);
+      // renderer.setPixelRatio(window.devicePixelRatio);
+      // console.log(renderer.getPixelRatio());
+
+      // 创建几何体
+      const geometry = new THREE.BoxGeometry(100, 100, 100);
+      // 加载纹理
+      const texture = new THREE.TextureLoader().load(
+        './newPic.jpg',
+        function (res) {
+          console.log('win');
+          animate();
+        },
+        function (res) {
+          console.log('proccess');
+        },
+        function (res) {
+          console.log('fail');
+        }
+      );
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      // texture.repeat.set(2, 2);
+      // 或者以下方式设置;
+      texture.repeat = new THREE.Vector2(2, 2);
+      // texture.rotation会绕着纹理的0 0点 旋转
+      // texture.rotation = Math.PI / 3;
+      texture.offset = new THREE.Vector2(-0.2, 0.2); //为正向下，为负向上
+
+      // 添加纹理 || 材质#fff
+      const material = new THREE.MeshBasicMaterial({
+        // color: 0x00ff00,
+        // side: THREE.DoubleSide,
+        map: texture,
+      });
+      // 结合
+      const cube = new THREE.Mesh(geometry, material);
+
+      // 添加到场景当中去
+      scene.add(cube);
+      // orgCamera.position.z = 1000 - 100 * 1.414;
+      // orgCamera.position.z = 100 + 1.414;
+      orgCamera.position.z = 900;
+
+      // camera.lookAt(0, 90, 0);
+      // camera.up.x = -1;
+      renderer.render(scene, orgCamera);
+      let deg = 0;
+      // 运动函数
+      function animate() {
+        // console.log(cube)
+        // requestAnimationFrame(animate);
+        deg++;
+        // texture.rotation = (deg * Math.PI) / 180;
+
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        renderer.render(scene, orgCamera);
+      }
+      animate();
+
+      // 纹理加载是一个异步的过程
+    </script>
+  </body>
+</html>

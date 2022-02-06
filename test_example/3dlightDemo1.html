@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>点光源</title>
+  </head>
+  <body>
+    <script src="./three1.js"></script>
+    <script>
+      var clipPlane = [
+        // 延yoz平面切割
+        new THREE.Plane(new THREE.Vector3(1, 0, 0), 0),
+        new THREE.Plane(new THREE.Vector3(0, -1, 0), 0),
+        new THREE.Plane(new THREE.Vector3(0, 0, -1), 0),
+      ];
+      var scene = null;
+      var camera = null;
+      var renderer = null;
+      var sphere = null;
+      var light2 = null;
+      var lightSphere = null;
+      var rectLight = null;
+      // 初始化函数
+      function init() {
+        // 场景
+        scene = new THREE.Scene();
+        // 相机
+        camera = new THREE.PerspectiveCamera(
+          45,
+          window.innerWidth / window.innerHeight,
+          1,
+          1000
+        );
+        camera.position.z = 100;
+
+        // 渲染器
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.localClippingEnabled = true;
+        // renderer.setClearColor(0xffffff);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        // 创建几何体
+        sphere = createSphereGeometry(10, 0x00ffff);
+        scene.add(sphere);
+
+        // // 添加环境光
+        // const light1 = new THREE.AmbientLight(0xffffff); // soft white light
+        // scene.add(light1);
+        // // 添加点光源
+        // light2 = new THREE.PointLight(0xffffff, 1, 100);
+        // light2.position.set(50, 0, 0);
+        // // 给点光源的位置添加几何体
+        // lightSphere = createSphereGeometry(1, 0xffffff);
+        // // 一种方式设置该几何体的位置，然后添加到场景中去，另一种方法，就是直接在light中添加
+        // light2.add(lightSphere);
+        // scene.add(light2);
+        // 添加平面光光源
+        const width = 20;
+        const height = 20;
+        const intensity = 1;
+        rectLight = new THREE.RectAreaLight(0xffffff, intensity, width, height);
+        rectLight.position.set(10, 0, 0);
+        rectLight.lookAt(0, 0, 0);
+        var plane = createPlaneGeometry(20, 20);
+        rectLight.add(plane);
+        scene.add(rectLight);
+        animate();
+      }
+      //  创建球体
+      function createSphereGeometry(radius, color) {
+        // 添加几何体
+
+        var sphereGeometry = new THREE.SphereBufferGeometry(radius, 30, 30);
+        // 添加材质
+        var material = new THREE.MeshStandardMaterial({
+          color: new THREE.Color(color),
+          side: THREE.DoubleSide,
+        });
+        // 将几何体和材质结合生成网格结构
+        var sphere = new THREE.Mesh(sphereGeometry, material);
+
+        return sphere;
+      }
+
+      // 创建平面图形
+      function createPlaneGeometry(width, height) {
+        const geometry = new THREE.PlaneGeometry(width, height);
+        const material = new THREE.MeshBasicMaterial({
+          // color: 0xffffff,
+          // side: THREE.DoubleSide,
+          side: THREE.BackSide,
+        });
+        const materialBack = new THREE.MeshBasicMaterial({
+          color: 0x808080,
+          // side: THREE.DoubleSide,
+          // side: THREE.BackSide,
+        });
+        var planeBack = new THREE.Mesh(geometry, materialBack);
+
+        const plane = new THREE.Mesh(geometry, material);
+        plane.add(planeBack);
+        return plane;
+      }
+
+      let deg = 0;
+      // 动画效果
+      function animate() {
+        requestAnimationFrame(animate);
+        sphere.rotation.y += 0.01;
+
+        deg += 1;
+
+        rectLight.position.set(
+          20 * Math.cos((deg * Math.PI) / 180),
+          0,
+          20 * Math.sin((deg * Math.PI) / 180)
+        );
+        rectLight.lookAt(0, 0, 0);
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+        renderer.render(scene, camera);
+      }
+
+      init();
+    </script>
+  </body>
+</html>
