@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="cube"></div>
+    <script src="./three.js"></script>
+    <script>
+      let camera = null
+      let scene = null
+      let renderer = null
+
+      let faceA = [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]
+      let faceB = [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0]
+      let faceC = [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1]
+      let faceD = [1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0]
+      let faceE = [0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1]
+      let faceF = [1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1]
+      let faceG = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+      scene = new THREE.Scene()
+      //环境光
+      const ambient = new THREE.AmbientLight(0xffffff)
+      //环境光添加到场景中
+      scene.add(ambient)
+      const width = window.innerWidth
+      // 窗口高度
+      const height = window.innerHeight
+      // 创建相机对象
+      camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000)
+      // 设置相机的位置
+      camera.position.set(0, 0, 300)
+      // 设置相机的方向（指向场景的方向）
+      camera.lookAt(scene.position)
+      /**
+       * 创建渲染器的对象
+       */
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        logarithmicDepthBuffer: true,
+      })
+      // 设置渲染区域的尺寸
+      renderer.setSize(width, height)
+      // 设置背景颜色
+      renderer.setClearColor(0x424142, 1)
+      renderer.shadowMap.enabled = true
+      // 指定元素中插入canvas对象
+      const webglBox = document.getElementById('cube')
+      webglBox.appendChild(renderer.domElement)
+
+      const vertices = new Float32Array([
+        -10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        -10,
+        10,
+        10,
+        -10,
+        10,
+        -10,
+        -10,
+        10,
+        -10,
+        10,
+        10, // 正面
+
+        -10,
+        10,
+        -10,
+        10,
+        10,
+        -10,
+        10,
+        -10,
+        -10,
+        10,
+        -10,
+        -10,
+        -10,
+        -10,
+        -10,
+        -10,
+        10,
+        -10, // 背面
+
+        10,
+        10,
+        10,
+        10,
+        10,
+        -10,
+        10,
+        -10,
+        -10,
+        10,
+        -10,
+        -10,
+        10,
+        -10,
+        10,
+        10,
+        10,
+        10, //右面
+
+        -10,
+        10,
+        10,
+        -10,
+        10,
+        -10,
+        -10,
+        -10,
+        -10,
+        -10,
+        -10,
+        -10,
+        -10,
+        -10,
+        10,
+        -10,
+        10,
+        10, //左面
+
+        -10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        -10,
+        10,
+        10,
+        -10,
+        -10,
+        10,
+        -10,
+        -10,
+        10,
+        10, // 顶面
+
+        -10,
+        -10,
+        10,
+        10,
+        -10,
+        10,
+        10,
+        -10,
+        -10,
+        10,
+        -10,
+        -10,
+        -10,
+        -10,
+        -10,
+        -10,
+        -10,
+        10, //地面
+      ])
+      let group
+      group = new THREE.Group()
+      for (let i = -1; i < 2; i++) {
+        for (let j = -1; j < 2; j++) {
+          for (let k = -1; k < 2; k++) {
+            // 创建几何体
+            const geometry = new THREE.BufferGeometry()
+            geometry.attributes.position = new THREE.BufferAttribute(
+              vertices,
+              3
+            )
+            let colorsArr1 = [],
+              colorsArr2 = [],
+              colorsArr3 = []
+            // 为不同位置的几何体的各个面赋予不同的颜色
+            switch (i) {
+              case -1: {
+                colorsArr1 = [...faceG, ...faceC]
+                break
+              }
+              case 0: {
+                colorsArr1 = [...faceG, ...faceG]
+                break
+              }
+              case 1: {
+                colorsArr1 = [...faceA, ...faceG]
+                break
+              }
+            }
+            switch (k) {
+              case -1: {
+                colorsArr2 = [...faceG, ...faceD]
+                break
+              }
+              case 0: {
+                colorsArr2 = [...faceG, ...faceG]
+                break
+              }
+              case 1: {
+                colorsArr2 = [...faceB, ...faceG]
+                break
+              }
+            }
+            switch (j) {
+              case -1: {
+                colorsArr3 = [...faceG, ...faceF]
+                break
+              }
+              case 0: {
+                colorsArr3 = [...faceG, ...faceG]
+                break
+              }
+              case 1: {
+                colorsArr3 = [...faceE, ...faceG]
+                break
+              }
+            }
+            const colorsArr = [...colorsArr1, ...colorsArr2, ...colorsArr3]
+            const colors = new Float32Array(colorsArr)
+            geometry.attributes.color = new THREE.BufferAttribute(colors, 3)
+            // 创建材质
+            const material = new THREE.MeshBasicMaterial({
+              vertexColors: THREE.VertexColors, //以顶点颜色为准
+              side: THREE.DoubleSide, //两面可见
+            })
+            const mesh = new THREE.Mesh(geometry, material)
+            mesh.name = i + '' + j + '' + k
+            // 正方体的位置（基于世界坐标系）
+            mesh.position.set(k * 23, j * 23, i * 23)
+            group.add(mesh)
+            // scene.add(group)
+          }
+        }
+      }
+      scene.add(group)
+      console.log(group)
+      function animate() {
+        requestAnimationFrame(animate)
+        // sidedGeometry12.rotation.z += 0.01;
+        // sidedGeometry12.rotation.x += 0.01;
+        // sidedGeometry12.rotation.y += 0.01;
+        group.rotation.z += 0.01
+        group.rotation.x += 0.01
+        group.rotation.y += 0.01
+        // camera.lookAt(0, 0, 0);
+        // deg += 1;
+        // camera.position.set(
+        //   200 * Math.cos(deg * (Math.PI / 180)),
+        //   0,
+        //   200 * Math.sin(deg * (Math.PI / 180))
+        // );
+        // renderer.render(circle, orgCamera);
+        renderer.render(scene, camera)
+        // console.log(group);
+      }
+      animate()
+    </script>
+  </body>
+</html>
