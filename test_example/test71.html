@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="./three.js"></script>
+    <script>
+        var scene = new THREE.Scene();
+
+        var width = window.innerWidth; //窗口宽度
+        var height = window.innerHeight; //窗口高度
+        var k = width / height; //窗口宽高比
+        var s = 200; //三维场景显示范围控制系数，系数越大，显示的范围越大
+
+        //创建相机对象
+        var camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+        camera.position.set(100, 200, 250); //设置相机位置
+        camera.lookAt(scene.position); //设置相机方向(指向的场景对象)
+
+
+        var loader = new THREE.TextureLoader();
+        var geometry = new THREE.BoxGeometry(30, 30, 30);
+        // 换成自己的图片路径
+        let one = loader.load('./1pic.jpg');
+        let two = loader.load('./2pic.jpg');
+        let three = loader.load('./3pic.jpg');
+        let four = loader.load('./4pic.jpg');
+        let five = loader.load('./5pic.jpg');
+        let six = loader.load('./6pic.jpg');
+
+        const material1 = new THREE.MeshBasicMaterial({ map: one });
+        const material2 = new THREE.MeshBasicMaterial({ map: two });
+        const material3 = new THREE.MeshBasicMaterial({ map: three });
+        const material4 = new THREE.MeshBasicMaterial({ map: four });
+        const material5 = new THREE.MeshBasicMaterial({ map: five });
+        const material6 = new THREE.MeshBasicMaterial({ map: six });
+
+        const materials = [material1, material2, material3, material4, material5, material6]
+
+        const dice = new THREE.Mesh(geometry, materials);
+        scene.add(dice);
+
+
+        // 光源
+        var light = new THREE.AmbientLight('rgb(255, 255, 255)'); // soft white light
+        scene.add(light);
+
+        var spotLight = new THREE.SpotLight('rgb(255, 255, 255)');
+        spotLight.position.set(100, 1000, 1000);
+        spotLight.castShadow = true;
+        scene.add(spotLight);
+
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        function draw() {
+            dice.rotation.x += 0.01;
+            dice.rotation.y += 0.01;
+            renderer.render(scene, camera);
+            stop = requestAnimationFrame(draw);
+
+        }
+
+        draw();
+
+
+    </script>
+</body>
+
+</html>

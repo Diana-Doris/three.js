@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="https://threejs.org/build/three.js"></script>
+    <script src="./OrbitControls.js"></script>
+
+</head>
+
+<body>
+    <script>
+        //建立了场景
+        var scene = new THREE.Scene();
+        /*
+            摄像机 ( PerspectiveCamera（透视摄像机）或者 OrthographicCamera（正交摄像机）。)
+              1.PerspectiveCamera( fov : Number, aspect : Number, near : Number, far : Number )
+                fov — 摄像机视锥体垂直视野角度
+                aspect — 摄像机视锥体长宽比
+                near — 摄像机视锥体近端面
+                far — 摄像机视锥体远端面
+            2.OrthographicCamera( left : Number, right : Number, top : Number, bottom : Number, near : Number, far : Number )
+                left — 摄像机视锥体左侧面。
+                right — 摄像机视锥体右侧面。
+                top — 摄像机视锥体上侧面。
+                bottom — 摄像机视锥体下侧面。
+                near — 摄像机视锥体近端面。
+                far — 摄像机视锥体远端面。
+        */
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        // 渲染器
+        var renderer = new THREE.WebGLRenderer({
+            antialias: true //是否执行抗锯齿
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        // 添加到页面中
+        document.body.appendChild(renderer.domElement);
+
+
+
+        const texture = new THREE.TextureLoader().load('./1pic.jpg');
+
+        // BoxGeometry（立方体）对象
+        var geometry = new THREE.BoxGeometry(20, 20, 4);
+        // 素材
+        var material = new THREE.MeshLambertMaterial({ color: 0xffff00 });
+
+        var material = new THREE.MeshBasicMaterial({
+            color: new THREE.Color(Math.random(), Math.random(), Math.random()),
+            // colorWrite: false,
+            side: THREE.DoubleSide,
+            map: texture,
+            // 谁在后面谁先渲染
+            // depthTest: false,
+        });
+
+
+        // 网格
+        var cube = new THREE.Mesh(geometry, material);
+        //默认情况下，当我们调用scene.add()的时候，物体将会被添加到坐标为(0,0,0)的位置。但这可能会使得摄像机的位置和立方体相互重叠（也就是摄像机位于立方体中）。
+        scene.add(cube);
+
+        //为了防止这种情况的发生，我们只需要将摄像机稍微向外移动一些即可。
+        camera.position.z = 100;
+
+        // light
+        var light = new THREE.PointLight(0xffff00);
+        light.position.set(10, 0, 25);
+        scene.add(light);
+
+
+        var controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.update();
+        // “渲染”或者“动画循环”
+        function animate() {
+            requestAnimationFrame(animate);
+            // 让它旋转起来
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+    </script>
+</body>
+
+</html>
